@@ -40,11 +40,11 @@ impl RpnCalculator{
         let y = stack.pop().expect("invalid syntax");
         let z = stack.pop().expect("invalid syntax");
         let res = match token {
-          "+" => y + z,
-          "-" => y - z,
-          "*" => y * z,
-          "/" => y / z,
-          "%" => y % z,
+          "+" => z + y,
+          "-" => z - y,
+          "*" => z * y,
+          "/" => z / y,
+          "%" => z % y,
           _ => panic!("invalid token"),
         };
         stack.push(res);
@@ -88,5 +88,24 @@ fn run<R: BufRead>(reader: R, verbose: bool) {
     let line = line.unwrap();
     let answer = calc.eval(&line);
     println!("{}", answer);
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_ok() {
+    let calc = RpnCalculator::new(false);
+    assert_eq!(calc.eval("5"), 5);
+    assert_eq!(calc.eval("50"), 50);
+    assert_eq!(calc.eval("-50"), -50);
+
+    assert_eq!(calc.eval("2 3 +"), 5);
+    assert_eq!(calc.eval("2 3 *"), 6);
+    assert_eq!(calc.eval("2 3 -"), -1);
+    assert_eq!(calc.eval("2 3 /"), 0);
+    assert_eq!(calc.eval("2 3 %"), 2);
   }
 }
